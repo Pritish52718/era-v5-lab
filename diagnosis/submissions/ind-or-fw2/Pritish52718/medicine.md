@@ -1,7 +1,7 @@
 # Medicine sheet: ind-or-fw2 (Pritish52718)
 
 One section for each disease that I found in more than five documents of the pack. Counts are from the
-400 rows labelled so far (of 500); they will be updated with the last rows. Each section has one rule
+500 labelled rows (the whole pack). Each section has one rule
 in code, `medicine_<code>(text)`: it returns the new text, or `True` to drop the document. The code runs on its own
 (Python 3, `re` only); the word lists it needs are inside it, so nothing else has to be downloaded.
 
@@ -12,31 +12,32 @@ training split (`ory_Orya`, 1,298,188 documents), used to decide which spelling 
 second Odia reader has not pushed labels yet, so the Gate 1 gold set is empty and every rule below is **"gold set
 empty, not testable"** for Gate 1. I will run the test again when it exists. Until then, each section reports an
 interim check with the course tool `harm_test_indic.py` on my own gold candidates: 48 documents that I marked clean
-and chose for gold before these rules were written (the independent check), and 93 after 45 more clean rows were
-added on 30 Oct. Those 45 were screened with this file (a document that any rule changes could not join), so the
-result on them is not an independent test. All rules, and all rules in order, changed 0 and dropped 0 of both sets.
+and chose for gold before these rules were written (the independent check), and 107 by the end of labelling. The 59
+added later are not an independent test - I chose them knowing the rules. One of them was chosen because the first
+version of the G2 rule changed a correct word in it (ଶୁଭ୍ର 'bright' in `eab39ff81439a97f`); that led to the word vote
+in Medicine G2. All rules, and all rules in order, now change 0 and drop 0 of both sets.
 
-| # | Code | Disease | Documents (of 400) | Action | Rule reaches, of the labelled documents | Interim harm (48 / 93) |
+| # | Code | Disease | Documents (of 500) | Action | Rule reaches, of the labelled documents | Interim harm (48 / 107) |
 |---|---|---|---|---|---|---|
-| 1 | C4 | unrelated documents joined | 11 | drop | 9 | 0 / 0 |
-| 2 | C3 | document cut off | 11 | drop | 10 | 0 / 0 |
-| 3 | A5 | same look, different bytes | 152 | fix | 148 | 0 / 0 |
-| 4 | G2 | halant joined to a suffix | 112 | fix | 102 | 0 / 0 |
-| 5 | C1 | boilerplate | 77 | fix | 74 | 0 / 0 |
-| 6 | A6 | wrong punctuation character | 37 | fix | 36 | 0 / 0 |
-| 7 | D3 | Latin letters inside Odia words | 19 | fix (tweets kept) | 2 (16 tweets kept by design, 1 flagged) | 0 / 0 |
+| 1 | C4 | unrelated documents joined | 12 | drop | 9 | 0 / 0 |
+| 2 | C3 | document cut off | 12 | drop | 10 | 0 / 0 |
+| 3 | A5 | same look, different bytes | 186 | fix | 183 | 0 / 0 |
+| 4 | G2 | halant joined to a suffix | 134 | fix | 125 | 0 / 0 |
+| 5 | C1 | boilerplate | 113 | fix | 110 | 0 / 0 |
+| 6 | A6 | wrong punctuation character | 41 | fix | 39 | 0 / 0 |
+| 7 | D3 | Latin letters inside Odia words | 21 | fix (tweets kept) | 2 (16 tweets kept by design, 1 flagged, 2 one-offs) | 0 / 0 |
 | 8 | F1 | personal data | 11 | fix (mask) | 7 (4 need a reader) | 0 / 0 |
 | 9 | G1 | orphan vowel signs | 8 | fix | 4 | 0 / 0 |
 | 10 | F3 | content we must not train on | 1 | drop | by site (10 sites); needs the URL | - |
-| 11 | D4 | machine translation | 7 | flag only | no rule in code | - |
+| 11 | D4 | machine translation | 9 | flag only | no rule in code | - |
 
-C2 (3 documents) is below the five-document line and is not here. F3 (1 document) is added anyway, because the
-split holds about 1,180 documents from such sites.
+C2 (3 documents) and B4 (2 documents) are below the five-document line and are not here. F3 (1 document) is added
+anyway, because the split holds about 1,180 documents from such sites.
 
 
 ## Medicine 1: C3 - document cut off
 
-1. **Disease:** C3. 11 documents. Examples: `c13fc62c03f33fdd` a listing page of 10 teasers, each cut at 'Read more'; `bf1d29d2299e77bb` 3 teasers cut at '…Read More'; `7cf3c6388da28028` 7 teasers cut at '…Read More'.
+1. **Disease:** C3. 12 documents. Examples: `c13fc62c03f33fdd` a listing page of 10 teasers, each cut at 'Read more'; `bf1d29d2299e77bb` 3 teasers cut at '…Read More'; `7cf3c6388da28028` 7 teasers cut at '…Read More'.
 2. **Medicine:** A line that stops at 'Read More', 'Read more', 'Continue Reading' or '[…]' marks a teaser. The rule drops a document when half or more of its lines are such teasers (a page with nothing complete in it); a single trailing teaser under a full article is removed by C1 instead.
 
 ```python
@@ -51,12 +52,12 @@ def medicine_c3(text):
 ```
 
 3. **Action:** drop the document.
-4. **Harm test:** Gate 1 gold set for Odia: **empty, not testable yet** (only one of the two Odia readers has pushed labels). Interim check with the course tool `harm_test_indic.py`, which does not count for Gate 1: on the **48 documents I marked clean and chose for gold before these rules were written**, this rule changed 0 and dropped 0 (0.00%, **PASS** at the small-set limit of 1 document); ZWJ/ZWNJ audit **PASS**; normal-form audit **PASS**. Same on all 93 of my gold candidates (0 / 0).
-5. **Side effects:** On the 400 rows the rule drops 10 of the 11 C3 documents. The one it keeps ends with an English tagline cut mid-sentence, which C1 removes. It drops no document that was not labelled C3. Scale check (20,000 random documents): drops 144 documents (0.72%).
+4. **Harm test:** Gate 1 gold set for Odia: **empty, not testable yet** (only one of the two Odia readers has pushed labels). Interim check with the course tool `harm_test_indic.py`, which does not count for Gate 1: on the **48 documents I marked clean and chose for gold before these rules were written**, this rule changed 0 and dropped 0 (0.00%, **PASS** at the small-set limit of 1 document); ZWJ/ZWNJ audit **PASS**; normal-form audit **PASS**. Same on all 107 of my gold candidates (0 / 0).
+5. **Side effects:** On the 500 rows the rule drops 10 of the 12 C3 documents. It keeps 2: one ends with an English tagline cut mid-sentence, which C1 removes, and one listing page whose teasers stop mid-word with no read-more marker (dropped by its reader). It drops no document that was not labelled C3. Scale check (20,000 random documents): drops 144 documents (0.72%).
 
 ## Medicine 2: C4 - unrelated documents joined
 
-1. **Disease:** C4. 11 documents. Examples: `c13fc62c03f33fdd` a district category page, 10 unrelated teasers; `62a6a5e21dfa8644` an author page, 10 teasers; `bf1d29d2299e77bb` a tag page, 3 teasers.
+1. **Disease:** C4. 12 documents. Examples: `c13fc62c03f33fdd` a district category page, 10 unrelated teasers; `62a6a5e21dfa8644` an author page, 10 teasers; `bf1d29d2299e77bb` a tag page, 3 teasers.
 2. **Medicine:** Three or more teasers, each cut at a read-more marker, joined into one page (a tag, category or archive listing).
 
 ```python
@@ -69,13 +70,13 @@ def medicine_c4(text):
 ```
 
 3. **Action:** drop the document.
-4. **Harm test:** Gate 1 gold set for Odia: **empty, not testable yet** (only one of the two Odia readers has pushed labels). Interim check with the course tool `harm_test_indic.py`, which does not count for Gate 1: on the **48 documents I marked clean and chose for gold before these rules were written**, this rule changed 0 and dropped 0 (0.00%, **PASS** at the small-set limit of 1 document); ZWJ/ZWNJ audit **PASS**; normal-form audit **PASS**. Same on all 93 of my gold candidates (0 / 0).
-5. **Side effects:** On the 400 rows the rule drops 9 of the 11 C4 documents. It misses 2 that have no read-more markers: a quiz listing page and a machine-translated news roundup (both dropped by their reader). It drops nothing else. Scale check (20,000 random documents): drops 130 documents (0.65%).
+4. **Harm test:** Gate 1 gold set for Odia: **empty, not testable yet** (only one of the two Odia readers has pushed labels). Interim check with the course tool `harm_test_indic.py`, which does not count for Gate 1: on the **48 documents I marked clean and chose for gold before these rules were written**, this rule changed 0 and dropped 0 (0.00%, **PASS** at the small-set limit of 1 document); ZWJ/ZWNJ audit **PASS**; normal-form audit **PASS**. Same on all 107 of my gold candidates (0 / 0).
+5. **Side effects:** On the 500 rows the rule drops 9 of the 12 C4 documents. It misses 3 that have no read-more markers: a quiz listing page, a machine-translated news roundup, and a business topic page whose teasers stop mid-word (all dropped by their reader). It drops nothing else. Scale check (20,000 random documents): drops 130 documents (0.65%).
 
 ## Medicine 3: A5 - same look, different bytes
 
-1. **Disease:** A5. 152 documents. Examples: `214806bb6c7f2265` ଦ୍ଵାରା (VA U+0B35 after the halant, where Odia writes WA U+0B71); `df1750dbd3bf7539` ଦ୍ବାରା 12 times (BA U+0B2C; the split writes ଦ୍ୱାରା 340,184 times and ଦ୍ବାରା 67,898); `1b632b403c370e2e` ପଡି଼ଛି (dot below U+0B3C typed after the vowel sign U+0B3F instead of before it).
-2. **Medicine:** Each sub-rule changes bytes only where the two forms draw the same on screen (checked by shaping with HarfBuzz and the Windows Odia font). BA after a halant becomes WA only for words on a list: the words used 100 or more times in the split whose majority spelling is WA, each read in context. A word typed with NNA+TA becomes its majority spelling in the split. ZWJ and ZWNJ are never touched.
+1. **Disease:** A5. 186 documents. Examples: `214806bb6c7f2265` ଦ୍ଵାରା (VA U+0B35 after the halant, where Odia writes WA U+0B71); `df1750dbd3bf7539` ଦ୍ବାରା 12 times (BA U+0B2C; the split writes ଦ୍ୱାରା 340,184 times and ଦ୍ବାରା 67,898); `1b632b403c370e2e` ପଡି଼ଛି (dot below U+0B3C typed after the vowel sign U+0B3F instead of before it).
+2. **Medicine:** Each sub-rule changes bytes only where the two forms draw the same on screen (checked by shaping with HarfBuzz and the Windows Odia font). BA after a halant becomes WA only for words on a list: the words used 100 or more times in the split whose majority spelling is WA, each read in context. A word typed with NNA+TA becomes its majority spelling in the split. ZWJ and ZWNJ are never touched. Inside a listed word only the wrong BA changes: a BA after MA or RA (ମ୍ବ, ର୍ବ) is standard and stays (ସ୍ବାବଲମ୍ବୀ → ସ୍ୱାବଲମ୍ବୀ, ସର୍ବସ୍ବ → ସର୍ବସ୍ୱ). A word that mixes BA and WA is looked up in its BA form (ଦ୍ବନ୍ଦ୍ୱ → ଦ୍ୱନ୍ଦ୍ୱ), and Odia digits glued to a word are not part of it (ଭୁବନେଶ୍ବର୧୦ → ଭୁବନେଶ୍ୱର୧୦).
 
 ```python
 import re
@@ -199,8 +200,9 @@ _NNTA = dict(p.split(":") for p in """
 """.split())   # a word typed with NNA+TA -> the spelling (NNA+DDA / NNA+TTA / NNA+TTHA) most writers use
 
 def _word(w):
-    if w in _RULE_A:
-        w = w.replace("\u0b4d\u0b2c", "\u0b4d\u0b71")        # subscript BA -> WA
+    k = w.replace("\u0b4d\u0b71", "\u0b4d\u0b2c") if "\u0b4d\u0b2c" in w else w   # a word mixing BA and WA: look it up in its BA form
+    if k in _RULE_A:
+        w = re.sub("(?<![\u0b2e\u0b30])\u0b4d\u0b2c", "\u0b4d\u0b71", k)   # subscript BA -> WA; MA+BA and RA+BA stay (standard)
     return _NNTA.get(w, w)
 
 def medicine_a5(text):
@@ -208,7 +210,7 @@ def medicine_a5(text):
     t = re.sub("(?<=\u0b4d)\u0b35", "\u0b71", t)                      # any other VA after a halant -> WA
     t = t.replace("\u0b2e\u0b4d\u0b71", "\u0b2e\u0b4d\u0b2c")          # MA + halant + WA -> MA + halant + BA
     t = re.sub("(?<=\u0b13\u0b4d)\u0b2c", "\u0b71", t)                # after O + halant the mark is always WA
-    t = re.sub("[\u0b01-\u0b7f]+", lambda m: _word(m.group()), t)     # the two word lists
+    t = re.sub("[\u0b01-\u0b65\u0b70-\u0b7f]+", lambda m: _word(m.group()), t)   # the two word lists (Odia digits are not part of a word)
     t = re.sub("(?<=\u0b1a)\u0b3c", "", t)                            # stray dot below CA -> delete it
     yya = "\u0b5f" if "\u0b5f" in text else "\u0b2f\u0b3c"            # write YYA the way this document does (keeps NFC)
     t = re.sub("(?<!\u0b30)\u0b4d\u0b2f(?!\u0b3c)", "\u0b4d" + yya, t)  # ya-phala typed with YA (not after RA) -> YYA
@@ -222,13 +224,13 @@ def medicine_a5(text):
 ```
 
 3. **Action:** fix the text.
-4. **Harm test:** Gate 1 gold set for Odia: **empty, not testable yet** (only one of the two Odia readers has pushed labels). Interim check with the course tool `harm_test_indic.py`, which does not count for Gate 1: on the **48 documents I marked clean and chose for gold before these rules were written**, this rule changed 0 and dropped 0 (0.00%, **PASS** at the small-set limit of 1 document); ZWJ/ZWNJ audit **PASS**; normal-form audit **PASS**. Same on all 93 of my gold candidates (0 / 0).
-5. **Side effects:** Measured on the 400 labelled rows, the rule changes 148 of the 152 A5 documents. It misses 4: rare BA words that are not on the list (the list covers 93% of the labelled BA uses), and a stray dot on ଯ, which is left alone because ଯ + dot is the standard (NFC) way to write ୟ - deleting it would break every ୟ of an NFC document. It changes 1 document not labelled A5, which is dropped for F3. A full-letter ଵ that is not after a halant (ଶିଵ) is a misspelling and is not touched. On the split, the BA list was read word by word: 1,035 correct, 0 wrong, 2 garbled words left out. The NNA list uses each word's majority spelling; the blunt alternative (always ଣ୍ତ → ଣ୍ଡ) would be right 92.4% of the time. Scale check (20,000 random documents of the split): changes 8,253 documents (41%) - BA/VA spellings are that common; the 25 most common changes read are all right (ଦ୍ଵାରା / ଦ୍ବାରା → ଦ୍ୱାରା, ଭୁବନେଶ୍ବର → ଭୁବନେଶ୍ୱର, ମଧ୍ଯ → ମଧ୍ୟ). A first version also deleted a repeated E sign; in the split that is a misplaced sign from a font conversion (ସମାନେେ, 12,222 uses, for ସେମାନେ), so the repeat rule now covers only signs after or below the letter. 4 changed documents raise a normal-form flag and are being checked.
+4. **Harm test:** Gate 1 gold set for Odia: **empty, not testable yet** (only one of the two Odia readers has pushed labels). Interim check with the course tool `harm_test_indic.py`, which does not count for Gate 1: on the **48 documents I marked clean and chose for gold before these rules were written**, this rule changed 0 and dropped 0 (0.00%, **PASS** at the small-set limit of 1 document); ZWJ/ZWNJ audit **PASS**; normal-form audit **PASS**. Same on all 107 of my gold candidates (0 / 0).
+5. **Side effects:** Measured on the 500 labelled rows, the rule changes 183 of the 186 A5 documents (594 of the 627 labelled places). It misses 3: two rare BA words that are not on the list (ବିଶ୍ବସ୍ଥ, ଦ୍ବାରଶୁଣି), and a stray dot on ଯ, which is left alone because ଯ + dot is the standard (NFC) way to write ୟ - deleting it would break every ୟ of an NFC document. It changes 1 document not labelled A5, which is dropped for F3. A full-letter ଵ that is not after a halant (ଶିଵ) is a misspelling and is not touched. Corrected on 31 Oct: the first version rewrote every BA of a listed word, so 6 listed words that also hold a standard ମ୍ବ or ର୍ବ came out with a wrong ମ୍ୱ or ର୍ୱ (ସ୍ବାବଲମ୍ବୀ → ସ୍ୱାବଲମ୍ୱୀ; 2,636 uses in the split); it did not look up a word glued to Odia digits (ଭୁବନେଶ୍ବର୧୦) or a word mixing BA and WA (ଦ୍ବନ୍ଦ୍ୱ). On the split, the BA list was read word by word: 1,035 correct, 0 wrong, 2 garbled words left out. The NNA list uses each word's majority spelling; the blunt alternative (always ଣ୍ତ → ଣ୍ଡ) would be right 92.4% of the time. Scale check (20,000 random documents of the split): changes 8,262 documents (41%) - BA/VA spellings are that common; the 25 most common changes read are all right (ଦ୍ଵାରା / ଦ୍ବାରା → ଦ୍ୱାରା, ଭୁବନେଶ୍ବର → ଭୁବନେଶ୍ୱର, ମଧ୍ଯ → ମଧ୍ୟ). A first version also deleted a repeated E sign; in the split that is a misplaced sign from a font conversion (ସମାନେେ, 12,222 uses, for ସେମାନେ), so the repeat rule now covers only signs after or below the letter. 4 changed documents of the sample raise a normal-form flag; they have not been read yet.
 
 ## Medicine 4: G2 - halant joined to a suffix without ZWNJ
 
-1. **Disease:** G2. 112 documents. Examples: `b71ee29a3fdcc265` ଖାନ୍ଙ୍କ (halant U+0B4D + U+0B19, no ZWNJ between); `99a3b26c232f32ef` ଓଭର୍ରେ (U+0B30 U+0B4D U+0B30 - the reph form); `844915f389ede8d0` ଜୋନ୍ରେ (U+0B4D + U+0B30, which draws as a ra-phala under ନ).
-2. **Medicine:** A loanword or name that ends in a halant fuses with its case suffix (ଟିମ୍ + ରେ draws as one conjunct). The rule drops that halant for stems on a list (ଟିମ୍ରେ → ଟିମରେ), because in the split 72-81% of writers write these words without the halant and almost none (≈0%) use ZWNJ. CDAC's standard prefers ZWNJ (ଟିମ୍‌ରେ); the rule follows what writers do. A stem is on the list only if the split joins it to a suffix at least 20 times and also writes it standing alone, halant and all, at least half as often - a word that ends in a halant (ଟିମ୍: alone 109,641 times, joined 13,526). Native words whose halant belongs to a conjunct never stand alone (ଚନ୍ଦ୍: alone 21, joined 71,902 in ଚନ୍ଦ୍ର), so ମାତ୍ର, କେନ୍ଦ୍ର, ଚନ୍ଦ୍ର are never touched. A consonant + halant + ଙ୍କ is changed without a list: that sequence never occurs inside a native word.
+1. **Disease:** G2. 134 documents. Examples: `b71ee29a3fdcc265` ଖାନ୍ଙ୍କ (halant U+0B4D + U+0B19, no ZWNJ between); `99a3b26c232f32ef` ଓଭର୍ରେ (U+0B30 U+0B4D U+0B30 - the reph form); `844915f389ede8d0` ଜୋନ୍ରେ (U+0B4D + U+0B30, which draws as a ra-phala under ନ).
+2. **Medicine:** A loanword or name that ends in a halant fuses with its case suffix (ଟିମ୍ + ରେ draws as one conjunct). The rule drops that halant for stems on a list (ଟିମ୍ରେ → ଟିମରେ), because in the split 72-81% of writers write these words without the halant and almost none (≈0%) use ZWNJ. CDAC's standard prefers ZWNJ (ଟିମ୍‌ରେ); the rule follows what writers do. A stem is on the list only if the split joins it to a suffix at least 20 times and also writes it standing alone, halant and all, at least half as often - a word that ends in a halant (ଟିମ୍: alone 109,641 times, joined 13,526). Native words whose halant belongs to a conjunct never stand alone (ଚନ୍ଦ୍: alone 21, joined 71,902 in ଚନ୍ଦ୍ର), so ମାତ୍ର, କେନ୍ଦ୍ର, ଚନ୍ଦ୍ର are never touched. A consonant + halant + ଙ୍କ is changed without a list: that sequence never occurs inside a native word. A stem + ର / ରେ / ରୁ has the same bytes as a native word that ends in a ର-phala, so a word vote decides those: all spellings of the stem vote together, halant forms against no-halant forms ('online' + ରେ: 5,169 with the halant, 9,102 without, so ଅନ୍ଲାଇନ୍ରେ changes), and a form the split writes with the halant more than 3 times as often is a word of its own and is kept (ଶୁଭ୍ର 'bright' 692 against ଶୁଭର 148; ରାଜପୁତ୍ର, ଉଡ୍ର, ତତ୍ର). The 3,126 most-used words the rule touches (90% of its changes in the split) were then read - the short ones in real sentences - and the keep list was corrected both ways: 13 native words and names the vote missed were added (ସତ୍ର 'session', whose no-halant form ସତର means 'seventeen'; ସୁମିତ୍ର; ଆଶ୍ରେ 'refuge'), 43 real joins it kept were taken out. The suffixes ମାନେ and ମାନଙ୍କରେ are included, and Odia digits glued to a word are not part of it.
 
 ```python
 import re
@@ -454,10 +456,52 @@ _STEMS = frozenset("""
 """.split())   # stems ending in a halant that the 1.3M-doc split joins to a suffix >= 20 times AND writes standing
                # alone, halant and all, at least half as often (a loanword or name); native stems removed by reading
 
-_SUFFIXES = ("ମାନଙ୍କର", "ମାନଙ୍କୁ", "ମାନଙ୍କ", "ଗୁଡ଼ିକର", "ଗୁଡ଼ିକୁ", "ଗୁଡ଼ିକ", "ଗୁଡିକର", "ଗୁଡିକୁ", "ଗୁଡିକ",
-             "ଙ୍କର", "ଙ୍କୁ", "ଙ୍କ", "ଠାରେ", "ଠାରୁ", "ରକୁ", "ରେ", "ରୁ", "କୁ", "ର")   # not ଟି: English -ti words (ମଲ୍ଟି multi)
+_KEEP = frozenset("""
+    ଅକ୍ସାଇଡ୍କୁ ଅକ୍ସାଇଡ୍ରୁ ଅଙ୍କଲ୍ରୁ ଅଜିଜ୍ର ଅଜିତ୍ରକୁ ଅଟିଜିମ୍ରେ ଅଣ୍ଡରପାସ୍କୁ ଅଣ୍ଡରପାସ୍ରୁ ଅପିଲ୍ରୁ ଅରବିନ୍ଦ୍ର ଅଷ୍ଟିନ୍ରୁ ଆଇଏସ୍ରୁ
+    ଆଇଓଏସ୍ରୁ ଆଇଡିଏସ୍କୁ ଆଇଡିଏସ୍ରୁ ଆଣ୍ଡ୍ରୁ ଆଣ୍ଡ୍ରେ ଆପିକଲ୍କୁ ଆବ୍ବାସ୍କୁ ଆବ୍ବାସ୍ର ଆବ୍ରାହମ୍କୁ ଆମିର୍ର ଆମେଜ୍କୁ ଆମେଜ୍ରୁ
+    ଆମେଜ୍ରେ ଆରଜିଏଚ୍ରୁ ଆର୍ଜିଏଚ୍ରୁ ଆଶ୍ରକୁ ଆଶ୍ରୁ ଆଶ୍ରେ ଆସୋଚାମ୍କୁ ଆସୋଚାମ୍ରେ ଇଦ୍ରୁ ଉଡ୍ର ଉଦ୍ଧ୍ୱର୍କୁ ଉଦ୍ଧ୍ୱର୍ର
+    ଉଦ୍ଧ୍ୱର୍ରୁ ଉଦ୍ଧ୍ୱର୍ରେ ଉଲ୍କୁ ଊଦ୍ଧ୍ୱର୍କୁ ଊଦ୍ଧ୍ୱର୍ର ଊଦ୍ଧ୍ୱର୍ରୁ ଊଦ୍ଧ୍ୱର୍ରେ ଏଆଇଏଫ୍ଏଫ୍ରୁ ଏଇଏସ୍ରେ ଏଚ୍ପିସିଏଲ୍ରୁ ଏଡିଏମ୍ରେ ଏଣ୍ଡ୍ରୁ
+    ଏନ୍ଆଇଏନ୍ଏଲ୍କୁ ଏନ୍ଆଇଏନ୍ଏଲ୍ର ଏନ୍ଆଇଏନ୍ଏଲ୍ରୁ ଏନ୍ଆଇଏନ୍ଏଲ୍ରେ ଏନ୍ଏଚ୍ଏମ୍କୁ ଏନ୍ଏଚ୍ଏମ୍ରୁ ଏନ୍ଏସ୍ଏସ୍ରୁ ଏନ୍ଟିଆର୍ରୁ ଏନ୍ସେଫାଲାଇଟିସ୍କୁ ଏଫ୍ଆଇଏଚ୍କୁ ଏଫ୍ଆଇଏଚ୍ରେ ଏମ୍ଏମ୍କୁ
+    ଏମ୍ଜିଏନ୍ଆରଇଜିଏସ୍ର ଏମ୍ଜିଏନ୍ଆର୍ଇଜିଏସ୍କୁ ଏମ୍ଜିଏନ୍ଆର୍ଇଜିଏସ୍ର ଏମ୍ଟିଏନ୍ଏଲ୍ରୁ ଏସିଆଡ୍କୁ ଏସିଆଡ୍ରୁ ଏସିଏଫ୍କୁ ଏସ୍ଡିଏମ୍ର ଏସ୍ଡିଜେଏମ୍କୁ ଏସ୍ରୁ ଏୟାରେଓ୍ଵଜ୍ରେ ଓଡ଼ିଶାଲାଇଭ୍ରୁ
+    ଓସିଏଲ୍ରୁ ଓସିଏଲ୍ରେ ଓ୍ଵବସାଇଟ୍ର ଓ୍ଵବସାଇଟ୍ରୁ ଓ୍ଵବସାଇଟ୍ରେ ଓ୍ଵବ୍ସାଇଟ୍ର ଓ୍ଵବ୍ସାଇଟ୍ରୁ ଓ୍ଵାନ୍କୁ ଓ୍ଵାଲେଟ୍ରୁ ଓ୍ଵାସିଂଟନ୍କୁ ଓ୍ଵାସିଂଟନ୍ର ଓ୍ଵିକେଟ୍ରୁ
+    ଓ୍ଵେବସାଇଟ୍ରୁ ଓ୍ଵେବ୍ସାଇଟ୍ରୁ ଓ୍ଵେବ୍ସାଇଟ୍ରେ କକ୍କୁ କକ୍ପିଟ୍ର କଟେଜ୍ରୁ କପିଲ୍ରୁ କମ୍ବ୍ୟାକ୍ରୁ କର୍ପୋରେଟ୍ରୁ କଷ୍ଟ୍ୟୁମ୍ରୁ କାଯ୍ୟର୍କୁ କାଯ୍ୟର୍ରୁ
+    କାଯ୍ୟର୍ରେ କାର୍ମାନଙ୍କ କାର୍ମାନଙ୍କୁ କିଏଭ୍ର କିଏଭ୍ରୁ କିକ୍ରୁ କିନ୍କୁ କୁଇଜ୍ରୁ କେଶ୍ର କୋକେନ୍ରୁ କୋକ୍କୁ କୋକ୍ରୁ
+    କୋୱିନ୍କୁ କ୍ବାରାଣ୍ଟାଇନ୍ର କ୍ବାରାଣ୍ଟିନ୍ରୁ କ୍ବାର୍ଟରଫାଇନାଲ୍ରୁ କ୍ରୀଡ଼ାବିତ୍ରୁ କ୍ରୁଟ୍ରୁ କ୍ରୁଡ୍ରୁ କ୍ଲଜ୍ରୁ କ୍ଲାଉଡ୍କୁ କ୍ଲାସେସ୍ରେ କ୍ୟାରେଟ୍ରୁ କ୍ୟୁସେକ୍ର
+    କ୍ୱାକ୍କୁ କ୍ୱାରେନ୍ଟାଇନ୍ର କ୍ୱିଭ୍କୁ ଖୁଦ୍ର ଗାଦ୍ରୁ ଗିଲ୍ଗଲ୍ର ଗିଲ୍ଗଲ୍ରେ ଗେଟ୍ଅପ୍ରୁ ଗ୍ରିସ୍କୁ ଗ୍ରିସ୍ର ଗ୍ରୀକ୍କୁ ଚାନ୍ଦ୍ର
+    ଚିଦମ୍ବରମ୍କୁ ଚିଫ୍ରେ ଚେକ୍ଗେଟ୍କୁ ଚେଜ୍କୁ ଜଜ୍ରୁ ଜଲିଉଡ୍କୁ ଜଲିଉଡ୍ରୁ ଜିହାଦ୍ରୁ ଜେନେରାଲ୍ରୁ ଜେଫ୍ର ଜେଫ୍ରେ ଜୋସ୍ରୁ
+    ଟକ୍ସିନ୍ରେ ଟଣ୍ଡନ୍ରେ ଟାଇଫସ୍କୁ ଟିଏସ୍ଏଫ୍କୁ ଟିଟିଏସ୍କୁ ଟିଟିଏସ୍ର ଟିଟିପିଏସ୍କୁ ଟିପିଏନ୍ଓଡିଏଲ୍କୁ ଟିପିସିଓଡିଏଲ୍କୁ ଟିପିସିଓଡିଏଲ୍ରୁ ଟିପିସିଓଡିଏଲ୍ରେ ଟେଷ୍ଟମ୍ୟାଚ୍କୁ
+    ଟେଷ୍ଟମ୍ୟାଚ୍ରୁ ଟୋନ୍ରୁ ଟ୍ଵିଟ୍ରୁ ଡକ୍କୁ ଡଗ୍ଆଉଟ୍ର ଡବଲିନ୍ର ଡବ୍ଲିନ୍ର ଡବ୍ଲିନ୍ରୁ ଡଲଫିନ୍ରୁ ଡାନିଏଲ୍କୁ ଡାଭୋସ୍ରୁ ଡାରୱିନ୍କୁ
+    ଡାରୱିନ୍ରେ ଡିଜାଇନର୍ରୁ ଡିନର୍ରୁ ଡିଲରସିପ୍ର ଡିଲରସିପ୍ରୁ ଡିଲର୍ସିପ୍ର ଡିଲର୍ସିପ୍ରୁ ଡିସ୍କମ୍କୁ ଡେକ୍କୁ ଡ୍ରଇଂରୁମ୍କୁ ଡ୍ରଗ୍ରକୁ ଡ୍ରେସିଂରୁମ୍ରୁ
+    ଡ୍ରେସିଂରୁମ୍ରେ ତତ୍ର ତାଗିଦ୍ରୁ ତାଜ୍ରୁ ତିରୁଅନନ୍ତପୁରମ୍କୁ ତୁର୍କୁ ଦାୟିତ୍କୁ ଦାୟିତ୍ର ଦାୟିତ୍ରକୁ ଦୌରାଜଜ୍ରୁ ଧୁମ୍ର ଧୂମ୍ର
+    ନକ୍କୁ ନାଇଣ୍ଟିନ୍ର ନାଇଣ୍ଟିନ୍ରୁ ନାଇଣ୍ଟିନ୍ରେ ନେଦରଲାଣ୍ଡସ୍ରୁ ପଁଚେତ୍ରୁ ପଁଚେତ୍ରେ ପଛପାଶ୍ୱର୍କୁ ପଛପାଶ୍ୱର୍ର ପଛପାଶ୍ୱର୍ରୁ ପଛପାଶ୍ୱର୍ରେ ପପ୍ରୁ
+    ପରମିଟ୍ରୁ ପରିବେଶବିତ୍କୁ ପଲିଟେକନିକ୍କୁ ପଲିଟେକ୍ନିକ୍କୁ ପଶ୍ଚାତ୍ରୁ ପାନ୍ଡେମିକ୍କୁ ପାନ୍ଡେମିକ୍ରୁ ପାନ୍ଡେମିକ୍ରେ ପିଆରଏମ୍ରୁ ପିଏସ୍କୁ ପିଏସ୍ରୁ ପିକକ୍କୁ
+    ପିକ୍ରୁ ପିଟ୍ରୁ ପିସିଆର୍ରୁ ପେଗାସସ୍ରୁ ପେନ୍ଡ୍ରାଇଭ୍ରୁ ପେସର୍ରେ ପୋଲାଭରମ୍ରୁ ପ୍ରଫେଟ୍କୁ ପ୍ରଫେସନାଲ୍କୁ ପ୍ରଫେସନାଲ୍ରେ ପ୍ଲାଟଫର୍ମସ୍କୁ ପ୍ଲାଟିନମ୍ରୁ
+    ପ୍ଲାଟିନମ୍ରେ ପ୍ଲାନେଟାରିୟମ୍ରୁ ପ୍ଲିଜ୍ରେ ପ୍ୟାଚ୍କୁ ଫର୍ମାଲିନ୍ର ଫିଲିପ୍ପିନ୍ସ୍କୁ ଫିଲିପ୍ପିନ୍ସ୍ର ଫିଲିପ୍ପିନ୍ସ୍ରୁ ଫିଲିପ୍ପିନ୍ସ୍ରେ ଫେମ୍କୁ ଫେମ୍ରୁ ଫୋନ୍ରକୁ
+    ଫ୍ଲୁଇଡ୍ର ବତ୍ର ବାଇଡେନ୍ରୁ ବାଇପାସ୍କୁ ବାକ୍କୁ ବାଟାଲିୟାନ୍ର ବାଟାଲିୟାନ୍ରେ ବାଥଟବ୍ର ବାମପାଶ୍ୱର୍କୁ ବାମପାଶ୍ୱର୍ର ବାମପାଶ୍ୱର୍ରେ ବାରିକେଡ୍ରୁ
+    ବିଏସ୍ସିଏଲ୍କୁ ବିଜ୍ରକୁ ବିଡ୍ରୁ ବିତ୍ରେ ବିବିଏଲ୍କୁ ବିମ୍ରୁ ବିଶ୍ର ବୁମ୍ରୁ ବୁଲ୍ବୁଲ୍ରୁ ବେଜିଙ୍ଗ୍କୁ ବୈଥେଲ୍କୁ ବୈଥେଲ୍ରୁ
+    ବୈଥେଲ୍ରେ ବୋଡର଼୍କୁ ବୋଡର଼୍ର ବୋଡର଼୍ରୁ ବୋଡର଼୍ରେ ବ୍ରିଟିସ୍କୁ ବ୍ଲିଙ୍କେନ୍ର ବ୍ୟାଙ୍ଗକକ୍ର ଭଲ୍ୟୁମ୍ରୁ ଭାତ୍ରୁ ଭିଡିଓକନ୍ରେ ଭିଭିପ୍ୟାଟ୍ରୁ
+    ମତ୍ର ମଧ୍ର ମନସ୍ତତ୍ତ୍ୱବିତ୍କୁ ମର୍ଣ୍ଣିଂୱାକ୍କୁ ମସୁଦ୍ରକୁ ମାଇକ୍ରନ୍ରେ ମାଇକ୍ରୋନ୍ରେ ମାଡ୍ରିଡ୍କୁ ମାରିଅନ୍ର ମିଥ୍କୁ ମିଥ୍ର ମିନିଟ୍ରକୁ
+    ମୁଭିଜ୍କୁ ମୁଭିଜ୍ରୁ ମୃତ୍ରୁ ମେକାନିକ୍ରେ ମେକାନିଜିମ୍ରେ ମେଡିଆନ୍କୁ ମେଡିଆନ୍ର ମେଡିଆନ୍ରୁ ମେଡିଆନ୍ରେ ମୋଟରବାଇକ୍ରୁ ମ୍ୟାକ୍ର ମ୍ୟାକ୍ରୁ
+    ଯତ୍ର ଯିହାଶାଫେଟ୍କୁ ଯିହୋୟାକୀମ୍କୁ ଯିହୋୟାକୀମ୍ର ରାଜପୁତ୍ର ରାଜପୁତ୍ରକୁ ରାସ୍ତାପାଶ୍ୱର୍କୁ ରାସ୍ତାପାଶ୍ୱର୍ର ରାସ୍ତାପାଶ୍ୱର୍ରୁ ରାସ୍ତାପାଶ୍ୱର୍ରେ ରିପବ୍ଲିକ୍ରୁ ରିପ୍ରେଜେଣ୍ଟେଟିଭ୍ରୁ
+    ରିଲେଶନଶିପ୍ରୁ ରିଲେସନଶିପ୍ରୁ ରୁଆନ୍କୁ ରୁବେନ୍ର ରୁଲେଟ୍କୁ ରୁଲେଟ୍ର ରୁଲ୍ରୁ ରେଡ୍ବୁଲ୍ରୁ ରେଡ୍ବୁଲ୍ରେ ରୢାକେଟ୍ରୁ ରୢାଙ୍କିଙ୍ଗ୍ର ଲଟ୍ରୁ
+    ଲର୍ଡସ୍ରୁ ଲାଇଫ୍ଷ୍ଟାଇଲ୍ରୁ ଲୁଇସ୍ରୁ ଲୁହାରଡ୍ରୁ ଲେକ୍ରୁ ଲେଥ୍ର ଲ୍ୟାଣ୍ଡମାଇନ୍ରୁ ଶକ୍କୁ ଶାହରୁଖ୍ରୁ ଶାହିଦ୍ରେ ଶିକ୍ଷାବିତ୍ର ଶିବନ୍କୁ
+    ଶୁଭମ୍ରେ ଶୁଭ୍ର ଶୁଭ୍ରକୁ ଶେଡ୍ରୁ ଶେପ୍କୁ ଶୋପିଆନ୍କୁ ଶୋପିଆନ୍ରୁ ଷ୍ଟୋଲ୍ର ଷ୍ଟ୍ରେଟ୍ରୁ ସଂଗ୍ରକୁ ସଜିନ୍କୁ ସଜିନ୍ର
+    ସଟ୍ପୁଟ୍କୁ ସଟ୍ପୁଟ୍ରୁ ସତ୍ର ସତ୍ୟଜିତ୍ରେ ସମ୍ପର୍କୁ ସମ୍ମମ୍କୁ ସମ୍ମମ୍ର ସମ୍ମମ୍ରୁ ସମ୍ମମ୍ରେ ସମ୍ମାନଙ୍କୁ ସର୍କ୍ୟୁଲାର୍ରୁ ସର୍କ୍ୟୁଲାର୍ରେ
+    ସାଉଥମ୍ପଟନ୍କୁ ସାଜିଦ୍ରେ ସାବିତ୍ର ସାବିତ୍ରେ ସାମ୍ସନ୍ରେ ସିଡାକ୍କୁ ସିଡାକ୍ରେ ସିଣ୍ଡିକେଟ୍ରୁ ସିଦ୍ଦିକ୍ର ସିପେଟ୍କୁ ସିଭିଲଟାଉନସିପ୍କୁ ସିଭିଲଟାଉନସିପ୍ର
+    ସିରାଜ୍ର ସିସିଏଚ୍ରୁ ସୁଇଚ୍ରୁ ସୁଇଟ୍ରୁ ସୁକ୍ରୁ ସୁମିତ୍ର ସୁମିତ୍ରେ ସେକ୍ରୁ ସେକ୍ରେଟାରିଏଟ୍କୁ ସେଥ୍ରେ ସୋହେଲ୍ରେ ସ୍କଟ୍ରେ
+    ସ୍ନିଲ୍କୁ ସ୍ନିଲ୍ର ସ୍ବିଜରଲ୍ୟାଣ୍ଡ୍ରୁ ସ୍ମାର୍ଟୱାଚ୍ରୁ ସ୍ମିଥ୍ରୁ ସ୍ୟାଟ୍ରୁ ହଗ୍ରୁ ହଦ୍ରକୁ ହସନ୍ରୁ ହାମିଲଟନ୍କୁ ହାମିଲଟନ୍ରୁ ହାରିସ୍କୁ
+    ହେଭିୱେଟ୍କୁ ହେଲେନ୍ର ହୋପ୍କୁ ୟାସ୍ରୁ ୟୁକ୍ରେନ୍ରକୁ ୟୁଟୁବ୍କୁ ୱାଟସନ୍ରେ ୱାଡର଼୍କୁ ୱାଡର଼୍ର ୱାଡର଼୍ରୁ ୱାଡର଼୍ରେ ୱିମ୍ବଲଡନ୍ରୁ
+    ୱେବିନାର୍ରୁ ୱେଲିଙ୍ଗଟନ୍ର ୱେଲିଙ୍ଗଟନ୍ରୁ
+""".split())   # joined forms left alone: the 1.3M-doc split writes them with the halant more than 3 times as often as
+               # without (all spellings of the stem vote together), so they are native words or names (ଶୁଭ୍ର 'bright');
+               # then corrected by reading the 3,126 most-used words: 13 native words added (ସତ୍ର), 43 real joins taken out
+
+_SUFFIXES = ("ମାନଙ୍କରେ", "ମାନଙ୍କର", "ମାନଙ୍କୁ", "ମାନଙ୍କ", "ଗୁଡ଼ିକର", "ଗୁଡ଼ିକୁ", "ଗୁଡ଼ିକ", "ଗୁଡିକର", "ଗୁଡିକୁ", "ଗୁଡିକ",
+             "ମାନେ", "ଙ୍କର", "ଙ୍କୁ", "ଙ୍କ", "ଠାରେ", "ଠାରୁ", "ରକୁ", "ରେ", "ରୁ", "କୁ", "ର")   # not ଟି: English -ti words (ମଲ୍ଟି multi)
 
 def _word(w):
+    if w in _KEEP:
+        return w
     m = re.match("(.*[କ-ଘଚ-ହଡ଼-ୟୱ])୍(ଙ୍କ.*)$", w)
     if m:                                                 # consonant + halant + NGA-KA: never native, always a join
         return m.group(1) + m.group(2)
@@ -467,17 +511,17 @@ def _word(w):
     return w
 
 def medicine_g2(text):
-    return re.sub("[\u0b01-\u0b7f]+", lambda m: _word(m.group()), text)
+    return re.sub("[\u0b01-\u0b65\u0b70-\u0b7f]+", lambda m: _word(m.group()), text)   # Odia digits are not part of a word
 ```
 
 3. **Action:** fix the text.
-4. **Harm test:** Gate 1 gold set for Odia: **empty, not testable yet** (only one of the two Odia readers has pushed labels). Interim check with the course tool `harm_test_indic.py`, which does not count for Gate 1: on the **48 documents I marked clean and chose for gold before these rules were written**, this rule changed 0 and dropped 0 (0.00%, **PASS** at the small-set limit of 1 document); ZWJ/ZWNJ audit **PASS**; normal-form audit **PASS**. Same on all 93 of my gold candidates (0 / 0).
-5. **Side effects:** On the 400 rows the rule changes 102 of the 112 G2 documents. It misses 10: rare stems, and joins with the counting suffix ଟି (ମ୍ୟାଚ୍ଟି), which is left out on purpose because English -ti words look the same (ମଲ୍ଟି 'multi' is ମଲ୍ + ଟି; the first version of this rule broke it in a gold document). It changes one document not labelled G2: ଭୁଲ୍କୁ → ଭୁଲକୁ, a stray halant on a native word, where the result is the correct spelling. The rule drops the halant; CDAC's standard keeps it and adds ZWNJ. If spec v1 chooses ZWNJ, return `w[:-len(s)] + chr(0x200C) + s` instead - the joiner audit will then, correctly, report a changed count. Scale check (20,000 random documents): changes 4,145 documents (21%); the most common changes read are all loanwords (ମ୍ୟାଚ୍ରେ → ମ୍ୟାଚରେ, ଚୀନ୍ର → ଚୀନର, ବ୍ଲକ୍ର → ବ୍ଲକର, ହସ୍ପିଟାଲ୍ରେ → ହସ୍ପିଟାଲରେ).
+4. **Harm test:** Gate 1 gold set for Odia: **empty, not testable yet** (only one of the two Odia readers has pushed labels). Interim check with the course tool `harm_test_indic.py`, which does not count for Gate 1: on the **48 documents I marked clean and chose for gold before these rules were written**, this rule changed 0 and dropped 0 (0.00%, **PASS** at the small-set limit of 1 document); ZWJ/ZWNJ audit **PASS**; normal-form audit **PASS**. Same on all 107 of my gold candidates (0 / 0). The first version changed 1 of the 107 (ଶୁଭ୍ର 'bright' → ଶୁଭର in `eab39ff81439a97f`), which passed only on the 1-document allowance; this version changes 0.
+5. **Side effects:** On the 500 rows the rule changes 125 of the 134 G2 documents (315 of the 363 labelled places). It misses 9: rare stems, and joins with the counting suffix ଟି (ମ୍ୟାଚ୍ଟି), which is left out on purpose because English -ti words look the same (ମଲ୍ଟି 'multi' is ମଲ୍ + ଟି; the first version of this rule broke it in a gold document). Precision on the pack: of its 322 changed words, 319 are labelled G2 and 3 are a stray halant on a native word (ଭୁଲ୍କୁ → ଭୁଲକୁ, ଜିଦ୍ରେ → ଜିଦରେ), where the result is the correct spelling; 0 are wrong. Precision on the split: the 3,126 most-used words the rule touches (90% of its 672,326 changed uses) were read. With the word vote alone, 3,047 changes were right (594,945 uses), 2 respelled a name harmlessly (ଠାକ୍ରେ → ଠାକରେ, Thackeray), 13 were wrong (623 uses, 0.1%), 21 native or garbled words were rightly kept and 43 real joins wrongly kept (2,580 uses); the 13 and the 43 are corrected in the keep list, so on these words the rule now does what the reading found. The other 10% of uses (14,466 rarer words) are not read. The first version had no vote and changed every native word on the list of stems: ଶୁଭ୍ର 'bright' → ଶୁଭର, ସତ୍ର 'session' → ସତର 'seventeen', ରାଜପୁତ୍ର, ଉଡ୍ର, ତତ୍ର. The rule drops the halant; CDAC's standard keeps it and adds ZWNJ. If spec v1 chooses ZWNJ, return `w[:-len(s)] + chr(0x200C) + s` instead - the joiner audit will then, correctly, report a changed count. Scale check (20,000 random documents): changes 4,133 documents (21%); the most common changes read are all loanwords (ମ୍ୟାଚ୍ରେ → ମ୍ୟାଚରେ, ଚୀନ୍ର → ଚୀନର, ବ୍ଲକ୍ର → ବ୍ଲକର, ହସ୍ପିଟାଲ୍ରେ → ହସ୍ପିଟାଲରେ).
 
 ## Medicine 5: C1 - boilerplate
 
-1. **Disease:** C1. 77 documents. Examples: `4d7b9e8ba1827d37` the Telegram promo line 'ପଢନ୍ତୁ ଓଡ଼ିଶା ରିପୋର୍ଟର ଖବର ଏବେ ଟେଲିଗ୍ରାମ୍ ରେ…' (the same line is in 76 pack documents); `133f0eeaf73efc3d` the opening greeting 'ନମସ୍କାର ବନ୍ଧୁ ଗଣ … ସ୍ୱାଗତ କରୁଅଛୁ'; `dc1ee7c5fb02b182` the English page template 'Edited By … Last updated … Share'.
-2. **Medicine:** Remove the boilerplate lines found while reading: the Telegram promo, read-more lines, site taglines, page templates, Instagram embed text, a TV-script cue, and the opening greeting / closing like-and-share request of blog pages. Each pattern starts at the boilerplate's first words and runs to the end of its line.
+1. **Disease:** C1. 113 documents. Examples: `4d7b9e8ba1827d37` the Telegram promo line 'ପଢନ୍ତୁ ଓଡ଼ିଶା ରିପୋର୍ଟର ଖବର ଏବେ ଟେଲିଗ୍ରାମ୍ ରେ…' (the same line is in 76 pack documents); `133f0eeaf73efc3d` the opening greeting 'ନମସ୍କାର ବନ୍ଧୁ ଗଣ … ସ୍ୱାଗତ କରୁଅଛୁ'; `dc1ee7c5fb02b182` the English page template 'Edited By … Last updated … Share'.
+2. **Medicine:** Remove the boilerplate lines found while reading: the Telegram promo, read-more and 'Also read' lines, site taglines, page templates, Instagram embed text, a TV-script cue, the storymirror read-time widget, a tweet credit line left without its tweet (an embedded tweet keeps its credit), a short photo credit, a 'Prev Post' link with the other story's headline, an app banner, and the opening greeting / closing like, share or comment request of blog pages. Each pattern starts at the boilerplate's first words and runs to the end of its line; the comment closing may start at most 80 characters before its request, because blogs that write without dandas would otherwise lose real sentences with it.
 
 ```python
 import re
@@ -492,11 +536,20 @@ _LINES = [   # boilerplate, matched from its first words to the end of the line
     r"ZEE Odisha is 24x7[^\n]*",
     r"The Newsroom Network Editorial Board[^\n]*",
     r"Jump to navigation Jump to search",
+    r"(?m)^[ \t]*Prev Post[ \t]*\n[^\n]*",                      # Prev Post link + the other story's headline under it
     r"(?m)^[ \t]*(?:Prev Post|Next Post|View More)[ \t]*$",
+    r"(?m)(?<=[଀-୿।]\n)[ \t]*— [^\n]*\(@\w+\) (?:January|February|March|April|May|June|July|August|September|October|November|December) \d{1,2}, \d{4}[ \t]*$",  # tweet credit with no tweet above it (an embedded tweet keeps its credit)
+    r"(?im)^[ \t]*photo credit[ \t]*[-–:][^\n]{0,50}$",          # photo credit line (short: some sites run the story on after it)
+    r"(?m)^[^\n]*?\d+ mins? \d+ \d+ mins? \d+[ \t]*$",            # storymirror read-time and like widget (with a repeat of the title)
+    r"ନ୍ୟୁଜ୍ By [^\n]*?Last updated [^\n]*?Share",                # kanaknews page template
+    r"(?im)^[ \t]*Also read[ \t]*[-–:][^\n]*$",                  # 'Also read-' line with another story's headline
+    r"Argus News App[\s\S]*?OPEN APP",                             # argusnews app banner
     r"(?m)^[ \t]*ବାଇଟ[ \t]*[–-][^\n]*",                         # TV-script cue line
     r"\n[^\n]*(?:Read [Mm]ore|Continue Reading)[ \t.…]*\s*\Z",    # a next-article teaser on the last line
     r"ନମସ୍କାର ବନ୍ଧୁ ଗଣ[^।\n]*ସ୍ୱାଗତ[^।\n]*।?",                  # opening greeting
+    r"ଆପଣ ?ମାନଙ୍କୁ ଆମର ପୋର୍ଟାଲ[^।\n]*ସ୍ୱାଗତ[^।\n]*।?",           # opening greeting (another blog)
     r"(?m)(?:^|(?<=[।|]))[^।|\n]*(?:ପେଜକୁ ଲାଇକ|ସେୟାର ମଧ୍ୟ କରିପାରିବେ|ଲାଇକ ଓ ଶେୟାର|ସେଆର କରନ୍ତୁ)[^\n]*",  # like/share closing
+    r"(?m)(?:^|(?<=[।|]))[^।|\n]{0,80}କମେଣ୍ଟ କରି ନିଶ୍ଚ[^\n]*",       # 'tell us in a comment' closing (short lead-in only)
 ]
 
 def medicine_c1(text):
@@ -510,12 +563,12 @@ def medicine_c1(text):
 ```
 
 3. **Action:** fix the text.
-4. **Harm test:** Gate 1 gold set for Odia: **empty, not testable yet** (only one of the two Odia readers has pushed labels). Interim check with the course tool `harm_test_indic.py`, which does not count for Gate 1: on the **48 documents I marked clean and chose for gold before these rules were written**, this rule changed 0 and dropped 0 (0.00%, **PASS** at the small-set limit of 1 document); ZWJ/ZWNJ audit **PASS**; normal-form audit **PASS**. Same on all 93 of my gold candidates (0 / 0).
-5. **Side effects:** On the 400 rows the rule changes 74 of the 77 C1 documents. It misses 3: section labels and unrelated next-article headlines that have no fixed wording. Run on its own it also trims the last teaser of 8 listing pages, which C4/C3 drop first when the rules run in order; on those pages and on one Instagram caption it removes an ellipsis '…', a compatibility character, so the normal-form audit would count it - no gold document contains any of these lines. Scale check (20,000 random documents): changes 1,690 documents (8.5%); the lines removed most are the Telegram promo, the like-and-share closings, Instagram embed text, News18 template lines and Prev/Next Post links. Other sites have their own boilerplate that these patterns do not know; a list of the lines repeated most across the split (read by hand) is the next step.
+4. **Harm test:** Gate 1 gold set for Odia: **empty, not testable yet** (only one of the two Odia readers has pushed labels). Interim check with the course tool `harm_test_indic.py`, which does not count for Gate 1: on the **48 documents I marked clean and chose for gold before these rules were written**, this rule changed 0 and dropped 0 (0.00%, **PASS** at the small-set limit of 1 document); ZWJ/ZWNJ audit **PASS**; normal-form audit **PASS**. Same on all 107 of my gold candidates (0 / 0).
+5. **Side effects:** On the 500 rows the rule changes 110 of the 113 C1 documents (123 of the 130 labelled lines). It misses 3: section labels at the top of a page and unrelated next-article headlines, which have no fixed wording. Run on its own it also trims the last teaser of 8 listing pages, which C4/C3 drop first when the rules run in order; on those pages and on one Instagram caption it removes an ellipsis '…', a compatibility character, so the normal-form audit would count it - no gold document contains any of these lines. Scale check (20,000 random documents): changes 1,859 documents (9.3%); the lines removed most are the Telegram promo, the like-and-share closings, Instagram embed text, News18 template lines and Prev/Next Post links. The patterns added on 31 Oct, each read on the same sample: tweet credit with no tweet 88 documents, storymirror widget 50, comment closing 26, blog greeting 20, Prev Post with the next headline 18, 'Also read' 7, photo credit 1, app banner 1. Three first drafts were too wide and were narrowed: a tweet credit pattern that also took the credit of a real embedded tweet (12 pack documents), a photo credit pattern that deleted story text some sites run on in the same line, and a comment closing that, in blogs written without dandas, took real sentences with it. Other sites have their own boilerplate that these patterns do not know; a list of the lines repeated most across the split (read by hand) is the next step.
 
 ## Medicine 6: A6 - wrong punctuation character
 
-1. **Disease:** A6. 37 documents. Examples: `00f8495b1b8cfbc0` the pipe U+007C used as a danda 51 times; `eff1c3ffce36d19e` Latin small l U+006C used as a danda twice ('ପାଳନ ହେବ l'); `98494872aa93bd27` ୧୦ା୮, the vowel sign AA U+0B3E used as the date separator.
+1. **Disease:** A6. 41 documents. Examples: `00f8495b1b8cfbc0` the pipe U+007C used as a danda 51 times; `eff1c3ffce36d19e` Latin small l U+006C used as a danda twice ('ପାଳନ ହେବ l'); `98494872aa93bd27` ୧୦ା୮, the vowel sign AA U+0B3E used as the date separator.
 2. **Medicine:** A pipe (U+007C), Latin l or I used as a danda becomes the danda U+0964 - but only after Odia text, never between digits (a pipe in a date such as ୧୬|୯ is the writer's style and is kept). A vowel sign AA between digits (a date like ୧୦ା୮) becomes /. A ring above (U+02DA) typed for anusvara becomes ଂ.
 
 ```python
@@ -539,12 +592,12 @@ def medicine_a6(text):
 ```
 
 3. **Action:** fix the text.
-4. **Harm test:** Gate 1 gold set for Odia: **empty, not testable yet** (only one of the two Odia readers has pushed labels). Interim check with the course tool `harm_test_indic.py`, which does not count for Gate 1: on the **48 documents I marked clean and chose for gold before these rules were written**, this rule changed 0 and dropped 0 (0.00%, **PASS** at the small-set limit of 1 document); ZWJ/ZWNJ audit **PASS**; normal-form audit **PASS**. Same on all 93 of my gold candidates (0 / 0).
-5. **Side effects:** On the 400 rows the rule changes 36 of the 37 A6 documents. It misses 1: a danda typed in place of the AA half of a vowel sign inside a word (ପେ।କ), which needs a corpus vote, not a pattern. Replacing the ring above (U+02DA) is a compatibility-character change, so the harm tool's normal-form audit flags it (4 pack documents); that change is intended. It touches no document that was not labelled A6. Scale check (20,000 random documents): changes 2,320 documents (11.6%), mostly a pipe after an Odia word (13,406 uses) and a Latin l (2,846) or I (829) after one. An earlier full-split check of these two patterns read 50 and 20 samples: 98% and 100% right once table markup and Latin neighbours were excluded, which this rule also does.
+4. **Harm test:** Gate 1 gold set for Odia: **empty, not testable yet** (only one of the two Odia readers has pushed labels). Interim check with the course tool `harm_test_indic.py`, which does not count for Gate 1: on the **48 documents I marked clean and chose for gold before these rules were written**, this rule changed 0 and dropped 0 (0.00%, **PASS** at the small-set limit of 1 document); ZWJ/ZWNJ audit **PASS**; normal-form audit **PASS**. Same on all 107 of my gold candidates (0 / 0).
+5. **Side effects:** On the 500 rows the rule changes 39 of the 41 A6 documents. It misses 2: a danda typed in place of the AA half of a vowel sign inside a word (ପେ।କ, ରେଙ୍ଗ।ଲି), which needs a corpus vote, not a pattern. Replacing the ring above (U+02DA) is a compatibility-character change, so the harm tool's normal-form audit flags it (5 pack documents); that change is intended. It touches no document that was not labelled A6. Scale check (20,000 random documents): changes 2,320 documents (11.6%), mostly a pipe after an Odia word (13,406 uses) and a Latin l (2,846) or I (829) after one. An earlier full-split check of these two patterns read 50 and 20 samples: 98% and 100% right once table markup and Latin neighbours were excluded, which this rule also does.
 
 ## Medicine 7: D3 - Latin letters inside Odia words
 
-1. **Disease:** D3. 19 documents. Examples: `a5cca87312d2ab8e` ରଖିଥିôବା (Latin ô U+00F4 inside an Odia word, 4 times); `d88f87c807a94750` ଭୋରତlଲ (Latin l U+006C typed for the vowel sign AA); `d94c8e8653e414a4` a Hindi tweet embed in Devanagari (kept: it is part of the story).
+1. **Disease:** D3. 21 documents. Examples: `a5cca87312d2ab8e` ରଖିଥିôବା (Latin ô U+00F4 inside an Odia word, 4 times); `d88f87c807a94750` ଭୋରତlଲ (Latin l U+006C typed for the vowel sign AA); `d94c8e8653e414a4` a Hindi tweet embed in Devanagari (kept: it is part of the story).
 2. **Medicine:** Most D3 documents quote an English (or Hindi) tweet that belongs to the story; those are kept. The rule only repairs a Latin l typed for the vowel sign AA between two Odia consonants (ଭୋରତlଲ → ଭୋରତାଲ). A Latin ô inside an Odia word is flagged, not changed: in a 20,000-document sample of the split it stands for a lost vowel sign I or TA+halant (ଆର୍ôଥକ = ଆର୍ଥିକ, ଉସôବ = ଉତ୍ସବ), so deleting it makes a wrong word.
 
 ```python
@@ -558,8 +611,8 @@ def medicine_d3(text):
 ```
 
 3. **Action:** fix the text (tweets are kept as they are).
-4. **Harm test:** Gate 1 gold set for Odia: **empty, not testable yet** (only one of the two Odia readers has pushed labels). Interim check with the course tool `harm_test_indic.py`, which does not count for Gate 1: on the **48 documents I marked clean and chose for gold before these rules were written**, this rule changed 0 and dropped 0 (0.00%, **PASS** at the small-set limit of 1 document); ZWJ/ZWNJ audit **PASS**; normal-form audit **PASS**. Same on all 93 of my gold candidates (0 / 0).
-5. **Side effects:** On the 400 rows the rule repairs the 2 documents with a Latin l inside an Odia word and leaves the 16 tweet documents as they are, by design; the ô document is flagged for a reader. It touches no other document. Scale check (20,000 random documents of the split): changes 47 documents (0.23%); every one of the most common changes read is right (ରlସନ → ରାସନ, ପlଠ → ପାଠ, ମତlନୁଯାୟୀ → ମତାନୁଯାୟୀ).
+4. **Harm test:** Gate 1 gold set for Odia: **empty, not testable yet** (only one of the two Odia readers has pushed labels). Interim check with the course tool `harm_test_indic.py`, which does not count for Gate 1: on the **48 documents I marked clean and chose for gold before these rules were written**, this rule changed 0 and dropped 0 (0.00%, **PASS** at the small-set limit of 1 document); ZWJ/ZWNJ audit **PASS**; normal-form audit **PASS**. Same on all 107 of my gold candidates (0 / 0).
+5. **Side effects:** On the 500 rows the rule repairs the 2 documents with a Latin l inside an Odia word and leaves the 16 tweet documents as they are, by design; the ô document is flagged for a reader, and two one-offs (a Latin S typed for ଏ, an English category description) are left to their reader. It touches no other document. Scale check (20,000 random documents of the split): changes 47 documents (0.23%); every one of the most common changes read is right (ରlସନ → ରାସନ, ପlଠ → ପାଠ, ମତlନୁଯାୟୀ → ମତାନୁଯାୟୀ).
 
 ## Medicine 8: F1 - personal data
 
@@ -621,8 +674,8 @@ def medicine_f1(text):
 ```
 
 3. **Action:** fix the text (mask).
-4. **Harm test:** Gate 1 gold set for Odia: **empty, not testable yet** (only one of the two Odia readers has pushed labels). Interim check with the course tool `harm_test_indic.py`, which does not count for Gate 1: on the **48 documents I marked clean and chose for gold before these rules were written**, this rule changed 0 and dropped 0 (0.00%, **PASS** at the small-set limit of 1 document); ZWJ/ZWNJ audit **PASS**; normal-form audit **PASS**. Same on all 93 of my gold candidates (0 / 0).
-5. **Side effects:** On the 400 rows the rule masks something in 7 of the 11 F1 documents. The 4 it misses need a reader: two private people named with their ward number (ward numbers are left alone, see below), a sexual-assault survivor's name, and a house address written with no cue word. It also masks one number not labelled F1: a gas-booking line (a public business number). Scale check (20,000 random documents of the split): it masks something in 268 documents (1.3%) - 193 phone numbers, 93 vehicle numbers, 48 e-mail addresses (many are template placeholders such as email@example.com), 16 PIN codes, 22 house or plot numbers and 1 Aadhaar number. Ward numbers are not masked: a first version did, and 112 of its 134 house-number hits were ward numbers in civic news (ward 5 of a municipality), not private addresses. Helpline numbers (108, 1800 ...) and percentages (a flat 20% off) are not touched. Names are never masked: news is full of public names, and there is no reliable Odia name finder.
+4. **Harm test:** Gate 1 gold set for Odia: **empty, not testable yet** (only one of the two Odia readers has pushed labels). Interim check with the course tool `harm_test_indic.py`, which does not count for Gate 1: on the **48 documents I marked clean and chose for gold before these rules were written**, this rule changed 0 and dropped 0 (0.00%, **PASS** at the small-set limit of 1 document); ZWJ/ZWNJ audit **PASS**; normal-form audit **PASS**. Same on all 107 of my gold candidates (0 / 0).
+5. **Side effects:** On the 500 rows the rule masks something in 7 of the 11 F1 documents. The 4 it misses need a reader: two private people named with their ward number (ward numbers are left alone, see below), a sexual-assault survivor's name, and a house address written with no cue word. It also masks one number not labelled F1: a gas-booking line (a public business number). Scale check (20,000 random documents of the split): it masks something in 268 documents (1.3%) - 193 phone numbers, 93 vehicle numbers, 48 e-mail addresses (many are template placeholders such as email@example.com), 16 PIN codes, 22 house or plot numbers and 1 Aadhaar number. Ward numbers are not masked: a first version did, and 112 of its 134 house-number hits were ward numbers in civic news (ward 5 of a municipality), not private addresses. Helpline numbers (108, 1800 ...) and percentages (a flat 20% off) are not touched. Names are never masked: news is full of public names, and there is no reliable Odia name finder.
 
 ## Medicine 9: G1 - orphan vowel signs
 
@@ -644,8 +697,8 @@ def medicine_g1(text):
 ```
 
 3. **Action:** fix the text.
-4. **Harm test:** Gate 1 gold set for Odia: **empty, not testable yet** (only one of the two Odia readers has pushed labels). Interim check with the course tool `harm_test_indic.py`, which does not count for Gate 1: on the **48 documents I marked clean and chose for gold before these rules were written**, this rule changed 0 and dropped 0 (0.00%, **PASS** at the small-set limit of 1 document); ZWJ/ZWNJ audit **PASS**; normal-form audit **PASS**. Same on all 93 of my gold candidates (0 / 0).
-5. **Side effects:** On the 400 rows the rule changes 4 of the 8 G1 documents. The other 4 lost a letter before the sign (ଏଣ୍ଡୋକ୍ାଇନୋ lost its ର), which no rule can restore. One of the 4 is wrong: in `20b39f1e4982f466` େହାର meant ଏହାର, and the rule writes ହୋର - the split shows the reordering is the usual case. It touches no other document. Scale check (20,000 random documents): changes 126 documents (0.63%); the most common changes read are all right (େସ → ସେ, େବାଲି → ବୋଲି, େନଇ → ନେଇ, େଗାଟିଏ → ଗୋଟିଏ). A first version wrote the letter ଏ instead (ଏସ, ଏବାଲି) and was wrong at scale; it was replaced.
+4. **Harm test:** Gate 1 gold set for Odia: **empty, not testable yet** (only one of the two Odia readers has pushed labels). Interim check with the course tool `harm_test_indic.py`, which does not count for Gate 1: on the **48 documents I marked clean and chose for gold before these rules were written**, this rule changed 0 and dropped 0 (0.00%, **PASS** at the small-set limit of 1 document); ZWJ/ZWNJ audit **PASS**; normal-form audit **PASS**. Same on all 107 of my gold candidates (0 / 0).
+5. **Side effects:** On the 500 rows the rule changes 4 of the 8 G1 documents. The other 4 lost a letter before the sign (ଏଣ୍ଡୋକ୍ାଇନୋ lost its ର), which no rule can restore. One of the 4 is wrong: in `20b39f1e4982f466` େହାର meant ଏହାର, and the rule writes ହୋର - the split shows the reordering is the usual case. It touches no other document. Scale check (20,000 random documents): changes 126 documents (0.63%); the most common changes read are all right (େସ → ସେ, େବାଲି → ବୋଲି, େନଇ → ନେଇ, େଗାଟିଏ → ଗୋଟିଏ). A first version wrote the letter ଏ instead (ଏସ, ଏବାଲି) and was wrong at scale; it was replaced.
 
 ## Medicine 10: F3 - content we must not train on
 
@@ -680,12 +733,12 @@ def medicine_f3(doc):
 ```
 
 3. **Action:** drop the document.
-4. **Harm test:** not testable with harm_test_indic.py (the rule needs the URL). None of the 93 gold candidates comes from these sites, so on the gold set it would change 0 and drop 0.
+4. **Harm test:** not testable with harm_test_indic.py (the rule needs the URL). None of the 107 gold candidates comes from these sites, so on the gold set it would change 0 and drop 0.
 5. **Side effects:** The rule drops whole sites, so a clean page on such a site goes too - acceptable for these sites. An adult site whose name is not on the list is missed; the list holds only the sites found in this split. Five sites whose names look alike were checked and are not adult (0% explicit): odianewsexpress.com, rajyakahani.in, mokahani.info, or.yalisdesign.com, or.dbdesignmw.com.
 
 ## Medicine 11: D4 - machine translation
 
-1. **Disease:** D4. 7 documents. Examples: `00f8495b1b8cfbc0` 'ମଦ୍ୟପାନ ଭିତ୍ତିକ ହାତ ଘଷିବା' ('alcohol-based hand rub' given as 'drinking-based'); `9aaad44dee05cc5f` 'ଅନୁପ, ୩୮, ଏବଂ…' (the English age-in-commas style); `e83ca0c3e48cc63a` 'ଓମ୍ ନାମ ଶିବାୟ' (a mangled mantra).
+1. **Disease:** D4. 9 documents. Examples: `00f8495b1b8cfbc0` 'ମଦ୍ୟପାନ ଭିତ୍ତିକ ହାତ ଘଷିବା' ('alcohol-based hand rub' given as 'drinking-based'); `9aaad44dee05cc5f` 'ଅନୁପ, ୩୮, ଏବଂ…' (the English age-in-commas style); `e83ca0c3e48cc63a` 'ଓମ୍ ନାମ ଶିବାୟ' (a mangled mantra).
 2. **Medicine:** No rule in code. A translation error (a wrong word sense, a doubled verb, an English word left inside an Odia word) can only be found by reading. The documents are kept and flagged, except one that was also a stitched roundup with a wrong fact (dropped by its reader).
 
 3. **Action:** flag only (keep), as labelled.
